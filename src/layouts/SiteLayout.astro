@@ -1,0 +1,52 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="container nav">
+          <a href="/" class="brand" aria-label="BoreBit Labs home">
+            <span class="brand-mark" aria-hidden="true"></span>
+            BoreBit Labs
+          </a>
+          <nav class="nav-links" aria-label="Main navigation">
+            <a href="/services" aria-current={currentPath === '/services' ? 'page' : undefined}>Services</a>
+            <a href="/studio" aria-current={currentPath === '/studio' ? 'page' : undefined}>Studio</a>
+            <a href="/work" aria-current={currentPath === '/work' ? 'page' : undefined}>Work</a>
+          </nav>
+          <a href="/contact" class="nav-cta">Book a project</a>
+        </div>
+      </header>
+
+      <main><slot /></main>
+
+      <footer class="site-footer">
+        <div class="container footer-wrap">
+          <a href="/" class="brand">
+            <span class="brand-mark" aria-hidden="true"></span>
+            BoreBit Labs
+          </a>
+          <span>Animation · Games · Interactive Experiences</span>
+          <a href="/contact">Get in touch <span aria-hidden="true">↗</span></a>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+
+const services = [
+  { icon: '✦', title: '2D & 3D animation', description: 'High-impact motion design, product storytelling, and cinematic sequences that amplify your brand or game world.' },
+  { icon: '▣', title: 'Game development', description: 'Prototyping, mechanics design, system architecture, and polished development for ambitious interactive products.' },
+  { icon: '◎', title: 'Creative production', description: 'Full-stack creative partnership for content pipelines, launch marketing, and technical visual execution at scale.' },
+];
+---
+
+<SiteLayout title="Services | BoreBit Labs" description="Explore animation, game development, and creative production services from BoreBit Labs.">
+  <div class="container page-heading">
+    <div class="eyebrow">What we do</div>
+    <h1>Creative systems for modern brands and game teams.</h1>
+    <p>From cinematic visuals to playable prototypes, we design interactive experiences that move audiences and convert attention into action.</p>
+  </div>
+  <section class="container content-section">
+    <div class="content-grid">
+      {services.map((service) => (
+        <article class="content-card">
+          <div class="card-icon" aria-hidden="true">{service.icon}</div>
+          <h2>{service.title}</h2>
+          <p>{service.description}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+</SiteLayout>

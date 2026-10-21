@@ -1,764 +1,97 @@
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="BoreBit Labs is an animation and game development studio creating cinematic experiences, gameplay systems, and production support for ambitious brands and teams."
-    />
-    <title>BoreBit Labs | Animation & Game Development Studio</title>
-    <style>
-      :root {
-        --bg: #0b1020;
-        --bg-strong: #0f172a;
-        --panel: rgba(15, 23, 42, 0.72);
-        --panel-strong: rgba(15, 23, 42, 0.92);
-        --line: rgba(148, 163, 184, 0.16);
-        --text: #ebf2ff;
-        --muted: #9aa9c7;
-        --accent: #8b5cf6;
-        --accent-2: #22d3ee;
-        --accent-3: #f59e0b;
-        --shadow: 0 30px 80px rgba(15, 23, 42, 0.5);
-      }
-
-      * { box-sizing: border-box; }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body {
-        margin: 0;
-        font-family: Inter, "Segoe UI", sans-serif;
-        background: radial-gradient(circle at top, rgba(139, 92, 246, 0.22), transparent 30%),
-          radial-gradient(circle at right, rgba(34, 211, 238, 0.14), transparent 25%),
-          var(--bg);
-        color: var(--text);
-      }
-
-      a { color: inherit; text-decoration: none; }
-
-      .page-shell {
-        position: relative;
-        min-height: 100vh;
-        overflow: hidden;
-      }
-
-      .orb {
-        position: absolute;
-        border-radius: 50%;
-        filter: blur(80px);
-        opacity: 0.5;
-        pointer-events: none;
-      }
-
-      .orb-one {
-        width: 420px;
-        height: 420px;
-        background: rgba(139, 92, 246, 0.28);
-        top: -120px;
-        left: 10%;
-      }
-
-      .orb-two {
-        width: 380px;
-        height: 380px;
-        background: rgba(34, 211, 238, 0.18);
-        right: 4%;
-        top: 120px;
-      }
-
-      .container {
-        width: min(1180px, calc(100% - 32px));
-        margin: 0 auto;
-      }
-
-      .topbar {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        backdrop-filter: blur(14px);
-        background: rgba(11, 16, 32, 0.4);
-        border-bottom: 1px solid var(--line);
-      }
-
-      .nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 22px 0;
-      }
-
-      .brand {
-        display: inline-flex;
-        align-items: center;
-        gap: 12px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .brand-mark {
-        width: 14px;
-        height: 14px;
-        border-radius: 3px;
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        box-shadow: 0 0 18px rgba(139, 92, 246, 0.8);
-      }
-
-      .nav-links {
-        display: flex;
-        gap: 26px;
-        color: var(--muted);
-        font-size: 0.95rem;
-      }
-
-      .nav-links a:hover {
-        color: var(--text);
-      }
-
-      .nav-cta {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.8rem 1.35rem;
-        border: 1px solid rgba(139, 92, 246, 0.4);
-        background: rgba(139, 92, 246, 0.12);
-        border-radius: 999px;
-        color: var(--text);
-        font-weight: 600;
-      }
-
-      .hero {
-        padding: 88px 0 40px;
-      }
-
-      .hero-grid {
-        display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        gap: 36px;
-        align-items: center;
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 0.55rem 0.9rem;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        background: rgba(15, 23, 42, 0.65);
-        color: #dbeafe;
-        font-size: 0.82rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-      }
-
-      .eyebrow::before {
-        content: "";
-        display: block;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--accent-2), var(--accent));
-        box-shadow: 0 0 12px rgba(34, 211, 238, 0.8);
-      }
-
-      h1 {
-        margin: 22px 0 18px;
-        font-size: clamp(3rem, 6vw, 6rem);
-        line-height: 0.96;
-        letter-spacing: -0.06em;
-      }
-
-      .lead {
-        max-width: 620px;
-        color: var(--muted);
-        font-size: 1.1rem;
-        line-height: 1.75;
-      }
-
-      .cta-row {
-        margin-top: 30px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 14px;
-      }
-
-      .button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem 1.5rem;
-        border-radius: 999px;
-        font-weight: 600;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-      }
-
-      .button:hover {
-        transform: translateY(-1px);
-      }
-
-      .button.primary {
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        color: white;
-        box-shadow: 0 18px 40px rgba(139, 92, 246, 0.28);
-      }
-
-      .button.secondary {
-        border: 1px solid var(--line);
-        background: rgba(15, 23, 42, 0.35);
-        color: var(--text);
-      }
-
-      .stats {
-        margin-top: 32px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-      }
-
-      .stat {
-        min-width: 120px;
-      }
-
-      .stat strong {
-        display: block;
-        font-size: clamp(1.4rem, 2vw, 2rem);
-        margin-bottom: 4px;
-      }
-
-      .stat span {
-        color: var(--muted);
-        font-size: 0.9rem;
-      }
-
-      .hero-panel {
-        position: relative;
-        min-height: 560px;
-      }
-
-      .device {
-        position: absolute;
-        inset: 24px 10px 10px 30px;
-        border-radius: 28px;
-        border: 1px solid rgba(148, 163, 184, 0.2);
-        background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.94));
-        box-shadow: var(--shadow);
-        overflow: hidden;
-      }
-
-      .device::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(139, 92, 246, 0.13), transparent 42%, rgba(34, 211, 238, 0.12));
-      }
-
-      .screen {
-        position: absolute;
-        inset: 24px 24px 18px 24px;
-        border-radius: 20px;
-        background: linear-gradient(160deg, rgba(15, 23, 42, 0.8), rgba(21, 34, 58, 0.9));
-        border: 1px solid rgba(148, 163, 184, 0.2);
-      }
-
-      .screen-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 18px 22px;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .dots {
-        display: flex;
-        gap: 8px;
-      }
-
-      .dots span {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        display: block;
-        background: rgba(148, 163, 184, 0.8);
-      }
-
-      .screen-label {
-        color: var(--muted);
-        font-size: 0.82rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .screen-body {
-        padding: 20px 22px 0;
-      }
-
-      .dashboard {
-        display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        gap: 18px;
-      }
-
-      .chart {
-        height: 210px;
-        border-radius: 20px;
-        background: linear-gradient(180deg, rgba(139, 92, 246, 0.18), rgba(15, 23, 42, 0));
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .chart::before {
-        content: "";
-        position: absolute;
-        inset: 18px 18px 18px 18px;
-        border-radius: 14px;
-        background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(34, 211, 238, 0.12));
-        clip-path: polygon(0 62%, 18% 58%, 33% 70%, 45% 49%, 62% 54%, 77% 34%, 100% 10%, 100% 100%, 0 100%);
-      }
-
-      .mini-cards {
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-      }
-
-      .mini-card {
-        min-height: 94px;
-        border-radius: 18px;
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        background: rgba(15, 23, 42, 0.76);
-        padding: 18px;
-      }
-
-      .mini-card strong {
-        display: block;
-        margin-top: 12px;
-        font-size: 1.5rem;
-      }
-
-      .mini-card span {
-        color: var(--muted);
-        font-size: 0.8rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .section {
-        padding: 42px 0;
-      }
-
-      .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: end;
-        gap: 24px;
-        margin-bottom: 28px;
-      }
-
-      .section-label {
-        color: var(--accent-2);
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        font-weight: 700;
-      }
-
-      h2 {
-        margin: 10px 0 0;
-        font-size: clamp(2.2rem, 4vw, 3.4rem);
-        letter-spacing: -0.05em;
-      }
-
-      .section-copy {
-        max-width: 520px;
-        line-height: 1.7;
-        color: var(--muted);
-      }
-
-      .services-grid,
-      .process-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 20px;
-      }
-
-      .card {
-        background: rgba(15, 23, 42, 0.7);
-        border: 1px solid var(--line);
-        border-radius: 22px;
-        padding: 24px;
-        box-shadow: 0 16px 40px rgba(2, 6, 23, 0.28);
-      }
-
-      .service-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
-        display: grid;
-        place-items: center;
-        background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(34, 211, 238, 0.18));
-        font-size: 1.4rem;
-      }
-
-      .card h3 {
-        font-size: 1.35rem;
-        margin: 18px 0 10px;
-      }
-
-      .card p {
-        color: var(--muted);
-        line-height: 1.7;
-        margin: 0;
-      }
-
-      .process-grid .card {
-        position: relative;
-        padding-top: 28px;
-      }
-
-      .step {
-        position: absolute;
-        top: 18px;
-        right: 20px;
-        color: rgba(139, 92, 246, 0.9);
-        font-size: 0.8rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-      }
-
-      .showcase {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-      }
-
-      .showcase-panel {
-        background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(17, 24, 39, 0.9));
-        border: 1px solid var(--line);
-        border-radius: 26px;
-        overflow: hidden;
-      }
-
-      .showcase-visual {
-        height: 220px;
-        background: linear-gradient(135deg, rgba(139, 92, 246, 0.22), rgba(34, 211, 238, 0.18));
-        position: relative;
-      }
-
-      .showcase-visual::before,
-      .showcase-visual::after {
-        content: "";
-        position: absolute;
-        inset: auto auto 18px 18px;
-        width: 160px;
-        height: 120px;
-        border-radius: 18px;
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        background: rgba(15, 23, 42, 0.35);
-      }
-
-      .showcase-visual::after {
-        left: auto;
-        right: 18px;
-        bottom: 38px;
-        width: 190px;
-        height: 90px;
-        background: rgba(34, 211, 238, 0.12);
-      }
-
-      .showcase-content {
-        padding: 20px 22px 22px;
-      }
-
-      .showcase-content h3 {
-        margin: 0 0 8px;
-        font-size: 1.5rem;
-      }
-
-      .showcase-content p {
-        color: var(--muted);
-        line-height: 1.7;
-        margin: 0;
-      }
-
-      .cta-band {
-        padding: 28px 0 72px;
-      }
-
-      .cta-box {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-        padding: 28px 30px;
-        border: 1px solid rgba(139, 92, 246, 0.3);
-        background: linear-gradient(135deg, rgba(139, 92, 246, 0.16), rgba(15, 23, 42, 0.8));
-        border-radius: 28px;
-      }
-
-      .cta-box h3 {
-        margin: 0 0 8px;
-        font-size: clamp(1.8rem, 3vw, 3rem);
-        letter-spacing: -0.04em;
-      }
-
-      .cta-box p {
-        color: var(--muted);
-        margin: 0;
-      }
-
-      footer {
-        padding: 0 0 52px;
-        color: var(--muted);
-      }
-
-      .footer-wrap {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid var(--line);
-        padding-top: 24px;
-      }
-
-      @media (max-width: 900px) {
-        .hero-grid,
-        .services-grid,
-        .process-grid,
-        .showcase {
-          grid-template-columns: 1fr;
-        }
-
-        .nav-links {
-          display: none;
-        }
-
-        .section-header,
-        .cta-box,
-        .footer-wrap {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-
-        .hero-panel {
-          min-height: 420px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="page-shell">
-      <div class="orb orb-one"></div>
-      <div class="orb orb-two"></div>
-
-      <header class="topbar">
-        <div class="container nav">
-          <a href="#top" class="brand" aria-label="BoreBit Labs home">
-            <span class="brand-mark"></span>
-            BoreBit Labs
-          </a>
-
-          <nav class="nav-links" aria-label="Main navigation">
-            <a href="#services">Services</a>
-            <a href="#studio">Studio</a>
-            <a href="#work">Work</a>
-            <a href="#contact">Contact</a>
-          </nav>
-
-          <a href="#contact" class="nav-cta">Book a project</a>
-        </div>
-      </header>
-
-      <main id="top">
-        <section class="hero">
-          <div class="container hero-grid">
-            <div>
-              <div class="eyebrow">Animation • Games • Interactive media</div>
-              <h1>Build the next unforgettable experience.</h1>
-              <p class="lead">
-                BoreBit Labs is a creative studio crafting cinematic animation, gameplay systems,
-                and technical production support for teams that need bold motion and memorable play.
-              </p>
-
-              <div class="cta-row">
-                <a href="#contact" class="button primary">Start a project</a>
-                <a href="#services" class="button secondary">Explore services</a>
-              </div>
-
-              <div class="stats" aria-label="Company stats">
-                <div class="stat">
-                  <strong>8+</strong>
-                  <span>Years crafting worlds</span>
-                </div>
-                <div class="stat">
-                  <strong>40+</strong>
-                  <span>Projects shipped</span>
-                </div>
-                <div class="stat">
-                  <strong>24/7</strong>
-                  <span>Creative partnership</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="hero-panel" aria-label="BoreBit product preview">
-              <div class="device">
-                <div class="screen">
-                  <div class="screen-top">
-                    <div class="dots">
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                    </div>
-                    <div class="screen-label">Launch Lab</div>
-                  </div>
-
-                  <div class="screen-body">
-                    <div class="dashboard">
-                      <div class="chart"></div>
-                      <div class="mini-cards">
-                        <div class="mini-card">
-                          <span>Engagement</span>
-                          <strong>92%</strong>
-                        </div>
-                        <div class="mini-card">
-                          <span>Retention</span>
-                          <strong>4.8x</strong>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="section" id="services">
-          <div class="container">
-            <div class="section-header">
-              <div>
-                <div class="section-label">What we do</div>
-                <h2>Creative systems for modern brands and game teams.</h2>
-              </div>
-              <p class="section-copy">
-                From cinematic visuals to playable prototypes, we design interactive experiences that move audiences and convert attention into action.
-              </p>
-            </div>
-
-            <div class="services-grid">
-              <article class="card">
-                <div class="service-icon">✦</div>
-                <h3>2D & 3D animation</h3>
-                <p>
-                  High-impact motion design, product storytelling, and cinematic sequences that amplify your brand or game world.
-                </p>
-              </article>
-
-              <article class="card">
-                <div class="service-icon">▣</div>
-                <h3>Game development</h3>
-                <p>
-                  Prototyping, mechanics design, system architecture, and polished development for ambitious interactive products.
-                </p>
-              </article>
-
-              <article class="card">
-                <div class="service-icon">◎</div>
-                <h3>Creative production</h3>
-                <p>
-                  Full-stack creative partnership for content pipelines, launch marketing, and technical visual execution at scale.
-                </p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="section" id="studio">
-          <div class="container">
-            <div class="section-header">
-              <div>
-                <div class="section-label">Studio process</div>
-                <h2>Strategy, polish, and execution under one roof.</h2>
-              </div>
-            </div>
-
-            <div class="process-grid">
-              <article class="card">
-                <div class="step">01</div>
-                <h3>Discover</h3>
-                <p>We learn the story, audience, and technical constraints behind your motion or game idea before shaping the plan.</p>
-              </article>
-
-              <article class="card">
-                <div class="step">02</div>
-                <h3>Prototype</h3>
-                <p>We transform the vision into interactive concepts, visual directions, and fast-moving production foundations.</p>
-              </article>
-
-              <article class="card">
-                <div class="step">03</div>
-                <h3>Deliver</h3>
-                <p>We refine every detail, ship production-ready assets, and support the launch with a clear execution path.</p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="section" id="work">
-          <div class="container">
-            <div class="section-header">
-              <div>
-                <div class="section-label">Recent focus</div>
-                <h2>Built for motion-first storytelling and play-first products.</h2>
-              </div>
-            </div>
-
-            <div class="showcase">
-              <article class="showcase-panel">
-                <div class="showcase-visual" aria-hidden="true"></div>
-                <div class="showcase-content">
-                  <h3>Brand launches</h3>
-                  <p>Campaign visuals, dramatic product reveals, and immersive social-first motion assets tuned for conversion.</p>
-                </div>
-              </article>
-
-              <article class="showcase-panel">
-                <div class="showcase-visual" aria-hidden="true"></div>
-                <div class="showcase-content">
-                  <h3>Playable experiences</h3>
-                  <p>Game prototypes, feature slices, and polished mechanics built to validate ideas and delight users.</p>
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="cta-band" id="contact">
-          <div class="container">
-            <div class="cta-box">
-              <div>
-                <h3>Ready to build your next world?</h3>
-                <p>Tell us what you’re making, and we’ll shape the creative path forward.</p>
-              </div>
-              <a href="mailto:hello@borebitlabs.com" class="button primary">hello@borebitlabs.com</a>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer>
-        <div class="container footer-wrap">
-          <div class="brand">
-            <span class="brand-mark"></span>
-            BoreBit Labs
-          </div>
-          <div>Animation • Games • Interactive Experiences</div>
-        </div>
-      </footer>
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+---
+
+<SiteLayout
+  title="BoreBit Labs | Animation & Game Development Studio"
+  description="BoreBit Labs is an animation and game development studio creating cinematic experiences, gameplay systems, and production support for ambitious brands and teams."
+>
+  <section class="hero container">
+    <div class="hero-copy">
+      <div class="eyebrow">Animation · Games · Interactive media</div>
+      <h1>Build the next unforgettable experience.</h1>
+      <p class="lead">
+        BoreBit Labs is a creative studio crafting cinematic animation, gameplay systems, and
+        technical production support for teams that need bold motion and memorable play.
+      </p>
+      <div class="button-row">
+        <a class="button primary" href="/contact">Start a project</a>
+        <a class="button secondary" href="/services">Explore services</a>
+      </div>
+      <div class="stats" aria-label="Company stats">
+        <div><strong>8+</strong><span>Years crafting worlds</span></div>
+        <div><strong>40+</strong><span>Projects shipped</span></div>
+        <div><strong>24/7</strong><span>Creative partnership</span></div>
+      </div>
     </div>
-  </body>
-</html>
+    <div class="hero-visual" aria-label="BoreBit Labs project dashboard preview">
+      <div class="visual-top"><span>● ● ●</span><span>Launch Lab</span></div>
+      <div class="visual-grid">
+        <div class="chart" aria-hidden="true"></div>
+        <div class="metrics">
+          <div><span>Engagement</span><strong>92%</strong></div>
+          <div><span>Retention</span><strong>4.8×</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-links container" aria-label="Explore BoreBit Labs">
+    <a href="/services"><span>01 / Services</span><strong>Animation, games, and production</strong><span class="arrow">↗</span></a>
+    <a href="/studio"><span>02 / Studio</span><strong>How we take ideas from brief to build</strong><span class="arrow">↗</span></a>
+    <a href="/work"><span>03 / Work</span><strong>What we make and where we focus</strong><span class="arrow">↗</span></a>
+  </section>
+</SiteLayout>
+
+<style>
+  .hero {
+    min-height: 620px;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: center;
+    gap: 52px;
+    padding-top: 68px;
+    padding-bottom: 64px;
+  }
+
+  .hero-copy { max-width: 670px; }
+  .eyebrow { color: var(--cyan); font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  h1 { max-width: 720px; margin: 20px 0; font-size: clamp(3.2rem, 6vw, 5.8rem); line-height: 0.98; letter-spacing: -0.055em; }
+  .lead { max-width: 600px; color: var(--muted); font-size: 1.1rem; line-height: 1.75; }
+  .button-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 30px; margin-top: 38px; }
+  .stats div { display: grid; gap: 4px; }
+  .stats strong { font-size: 1.65rem; }
+  .stats span { color: var(--muted); font-size: 0.84rem; }
+  .hero-visual { min-height: 350px; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(145deg, rgba(139, 92, 246, 0.2), rgba(15, 23, 42, 0.82) 54%, rgba(34, 211, 238, 0.12)); box-shadow: 0 30px 80px rgba(2, 6, 23, 0.35); }
+  .visual-top { display: flex; justify-content: space-between; padding-bottom: 18px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 0.76rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .visual-top span:first-child { color: var(--cyan); letter-spacing: 0.25em; }
+  .visual-grid { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 14px; padding-top: 18px; }
+  .chart { min-height: 240px; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(180deg, rgba(139, 92, 246, 0.2), transparent), linear-gradient(145deg, transparent 48%, rgba(34, 211, 238, 0.18)); clip-path: polygon(0 45%, 18% 52%, 34% 38%, 52% 57%, 70% 28%, 100% 12%, 100% 100%, 0 100%); }
+  .metrics { display: grid; gap: 14px; }
+  .metrics div { display: flex; flex-direction: column; justify-content: center; gap: 10px; min-height: 110px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: rgba(15, 23, 42, 0.75); }
+  .metrics span { color: var(--muted); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .metrics strong { font-size: 1.6rem; }
+  .home-links { padding-top: 10px; padding-bottom: 72px; }
+  .home-links a { display: grid; grid-template-columns: 150px 1fr 24px; align-items: center; gap: 18px; padding: 20px 0; border-top: 1px solid var(--line); }
+  .home-links a:last-child { border-bottom: 1px solid var(--line); }
+  .home-links a > span:first-child { color: var(--cyan); font-size: 0.78rem; letter-spacing: 0.07em; text-transform: uppercase; }
+  .home-links strong { font-size: 1.05rem; }
+  .arrow { color: var(--cyan); text-align: right; }
+
+  @media (max-width: 820px) {
+    .hero { min-height: auto; grid-template-columns: 1fr; gap: 34px; padding-top: 56px; }
+    .hero-visual { min-height: 300px; }
+  }
+
+  @media (max-width: 520px) {
+    .visual-grid { grid-template-columns: 1fr; }
+    .chart { min-height: 160px; }
+    .metrics { grid-template-columns: 1fr 1fr; }
+    .metrics div { min-height: 96px; padding: 12px; }
+    .home-links a { grid-template-columns: 1fr 24px; gap: 8px; }
+    .home-links a > span:first-child { grid-column: 1; }
+    .home-links strong { grid-column: 1; }
+    .home-links .arrow { grid-column: 2; grid-row: 1 / span 2; }
+  }
+</style>

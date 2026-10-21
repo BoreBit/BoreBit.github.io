@@ -1,0 +1,36 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+
+const focusAreas = [
+  { title: 'Brand launches', description: 'Campaign visuals, dramatic product reveals, and immersive social-first motion assets tuned for conversion.' },
+  { title: 'Playable experiences', description: 'Game prototypes, feature slices, and polished mechanics built to validate ideas and delight users.' },
+];
+---
+
+<SiteLayout title="Work | BoreBit Labs" description="See the kinds of motion-first stories and play-first products BoreBit Labs creates.">
+  <div class="container page-heading">
+    <div class="eyebrow">Recent focus</div>
+    <h1>Built for motion-first storytelling and play-first products.</h1>
+    <p>We partner with ambitious teams to make ideas tangible, memorable, and ready to meet their audience.</p>
+  </div>
+  <section class="container content-section">
+    <div class="content-grid work-grid">
+      {focusAreas.map((item, index) => (
+        <article class="content-card work-card">
+          <div class="work-art" aria-hidden="true"><span>BB / 0{index + 1}</span></div>
+          <h2>{item.title}</h2>
+          <p>{item.description}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+</SiteLayout>
+
+<style>
+  .work-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .work-card { padding: 0 0 24px; overflow: hidden; }
+  .work-card h2, .work-card p { margin-right: 24px; margin-left: 24px; }
+  .work-art { display: grid; place-items: end start; min-height: 230px; padding: 20px; margin-bottom: 22px; background: linear-gradient(125deg, rgba(139, 92, 246, 0.32), transparent 54%), linear-gradient(35deg, rgba(34, 211, 238, 0.2), rgba(15, 23, 42, 0.2)); }
+  .work-art span { color: rgba(235, 242, 255, 0.72); font-size: 0.78rem; letter-spacing: 0.1em; }
+  @media (max-width: 700px) { .work-grid { grid-template-columns: 1fr; } }
+</style>

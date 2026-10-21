@@ -1,0 +1,28 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+
+const steps = [
+  { number: '01', title: 'Discover', description: 'We learn the story, audience, and technical constraints behind your motion or game idea before shaping the plan.' },
+  { number: '02', title: 'Prototype', description: 'We transform the vision into interactive concepts, visual directions, and fast-moving production foundations.' },
+  { number: '03', title: 'Deliver', description: 'We refine every detail, ship production-ready assets, and support the launch with a clear execution path.' },
+];
+---
+
+<SiteLayout title="Studio | BoreBit Labs" description="Learn how BoreBit Labs plans, prototypes, and delivers animation and game projects.">
+  <div class="container page-heading">
+    <div class="eyebrow">Studio process</div>
+    <h1>Strategy, polish, and execution under one roof.</h1>
+    <p>A collaborative path from the first conversation to a finished experience, shaped around your creative goals and technical needs.</p>
+  </div>
+  <section class="container content-section">
+    <div class="content-grid">
+      {steps.map((step) => (
+        <article class="content-card">
+          <div class="step-number">{step.number} / PROCESS</div>
+          <h2>{step.title}</h2>
+          <p>{step.description}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+</SiteLayout>
