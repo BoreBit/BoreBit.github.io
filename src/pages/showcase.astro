@@ -1,0 +1,18 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+const images = import.meta.glob('../../assets/{Designer,Blender,UE}/*.{webp,jpg}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const videos = import.meta.glob('../../assets/{AfterEffects,UE}/*.mp4', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const groups = [
+  { folder: 'Designer', title: 'Substance Designer', description: 'Materials and textures made with Substance Designer. Add the story and process behind these explorations here.' },
+  { folder: 'Blender', title: 'Blender', description: 'A selection of 3D work created in Blender. Add your own notes about these pieces here.' },
+  { folder: 'UE', title: 'Unreal Engine', description: 'Worlds and scenes brought to life in Unreal Engine. Add your own project details here.' },
+  { folder: 'AfterEffects', title: 'After Effects', description: 'Motion and visual storytelling made with After Effects. Add your own notes here.' },
+];
+---
+<SiteLayout title="Showcase | BoreBit Labs" description="Explore BoreBit artwork by creative tool.">
+  <section class="container page-heading"><span class="eyebrow">The craft / BoreBit Labs</span><h1>Made with imagination.</h1><p>A look at the tools, materials, and ideas behind our work.</p></section>
+  {groups.map((group, index) => <section class="container showcase-group"><div class="showcase-heading"><span class="section-label">0{index + 1} / {group.title}</span><div><h2>{group.title}</h2><p>{group.description}</p></div></div><div class="media-grid">
+    {Object.entries(images).filter(([path]) => path.includes('/' + group.folder + '/')).map(([path, src]) => <figure><img src={src} alt={group.title + ' artwork'} loading="lazy" /><figcaption>{path.split('/').pop()?.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')}</figcaption></figure>)}
+    {Object.entries(videos).filter(([path]) => path.includes('/' + group.folder + '/')).map(([path, src]) => <figure><video src={src} controls preload="metadata" playsinline></video><figcaption>{path.split('/').pop()?.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')}</figcaption></figure>)}
+  </div></section>)}
+</SiteLayout>
