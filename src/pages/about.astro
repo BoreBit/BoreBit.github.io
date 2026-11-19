@@ -1,7 +1,57 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import { Image } from 'astro:assets';
+import akash from '../../assets/people/Akash Maurya.png';
+import anoop from '../../assets/people/Professor Anoop Ratn.png';
+import taraash from '../../assets/people/Taraash.jpg';
+import anshuman from '../../assets/people/Anshuman Nayak.png';
+
+// Add each person's title and a one-sentence description of their role here.
+// Empty fields stay hidden until the copy is ready.
+const people = [
+  { name: 'Professor Anoop Ratn', image: anoop, title: 'Co-founder', role: 'Brings nearly two decades of experience with the animation industry.' },
+  { name: 'Akash Maurya', image: akash, title: 'Founder', role: 'Research Assistant at IIIT Delhi Animation & Gaming Lab.' },
+  { name: 'Taraash', image: taraash, title: 'Co-founder', role: 'Unreal Authorized Instructor and Technical Artist' },
+  { name: 'Anshuman Nayak', image: anshuman, title: '', role: '' },
+];
 ---
 <SiteLayout title="About us | BoreBit Labs" description="BoreBit Labs is an independent creative studio exploring animation, games, and interactive experiences. We bring imagination and technical craft together to make ideas feel alive.">
   <section class="container page-heading"><span class="eyebrow">About us / BoreBit Labs</span><h1>Ideas, made with curiosity.</h1><p>BoreBit Labs is an independent creative studio exploring animation, games, and interactive experiences. We bring imagination and technical craft together to make ideas feel alive.</p></section>
-  <section class="container editorial-section"><div><span class="section-label">A little more</span><h2>Our story</h2><p>This is a space to share the story behind BoreBit, the people involved, and what inspires the work.</p></div><div class="image-placeholder"><span>Space for your images</span></div></section>
+  <section class="container team-section" aria-labelledby="team-title">
+    <div class="team-heading">
+      <h2 id="team-title">The people behind BoreBit.</h2>
+    </div>
+    <div class="team-grid">
+      {people.map((person) => (
+        <article class="person">
+          <Image src={person.image} alt={`Portrait of ${person.name}`} class="person-portrait"
+            width={540} height={540} format="webp" loading="lazy" />
+          <div class="person-copy">
+            <h3>{person.name}</h3>
+            {person.title && <p class="person-title">{person.title}</p>}
+            {person.role && <p class="person-role">{person.role}</p>}
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
 </SiteLayout>
+
+<style>
+  .team-section { padding-top: 48px; padding-bottom: 100px; border-top: 1px solid var(--line); }
+  .team-heading { margin-bottom: 32px; }
+  .team-heading h2 { margin: 14px 0 0; font-size: clamp(2rem, 4vw, 3.5rem); letter-spacing: -.05em; line-height: 1.1; }
+  .team-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; }
+  .person { min-width: 0; border-bottom: 1px solid var(--line); }
+  .person-portrait { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; object-position: center 30%; border-radius: 10px; background: var(--accent); }
+  .person-copy { padding: 20px 0; }
+  .person h3 { margin: 0; font-size: 1.35rem; line-height: 1.3; letter-spacing: -.025em; }
+  .person-title { margin: 12px 0 0; font-size: .875rem; font-weight: 700; line-height: 1.5; letter-spacing: .04em; text-transform: uppercase; }
+  .person-role { margin: 6px 0 0; color: var(--muted); line-height: 1.65; }
+  @media (max-width: 1000px) { .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; } }
+  @media (max-width: 600px) {
+    .team-grid { grid-template-columns: 1fr; gap: 24px; }
+    .team-section { padding-top: 28px; padding-bottom: 64px; }
+    .person { max-width: 440px; width: 100%; margin-inline: auto; }
+  }
+</style>

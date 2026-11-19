@@ -1,7 +1,30 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import MediaGallery from '../components/MediaGallery.astro';
+import classOverview from '../../assets/community/WhatsApp Image 2025-07-18 at 18.18.04_fc34777f.jpg';
+import liveDemo from '../../assets/community/WhatsApp Image 2025-07-18 at 18.18.05_434ba90c.jpg';
+import practice from '../../assets/community/WhatsApp Image 2025-07-18 at 18.18.05_a1aa90bc.jpg';
+import participants from '../../assets/community/WhatsApp Image 2025-07-18 at 18.18.06_a8041e3b.jpg';
+import workshop from '../../assets/community/WhatsApp Image 2025-07-18 at 18.18.06_d97efc5a.jpg';
+import instructor from '../../assets/community/WhatsApp Image 2025-07-18 at 18.18.08_d985b9de.jpg';
+const courseImages = [
+  { image: classOverview, alt: 'Participants watching an Unreal Engine demonstration in a classroom', caption: 'Inside the classroom / Learning together.' },
+  { image: liveDemo, alt: 'Unreal Engine editor projected during a live teaching session', caption: 'Live demonstrations / From explanation to practice.' },
+  { image: practice, alt: 'A participant following the lesson in Unreal Engine on a laptop', caption: 'Hands-on learning / Working directly in the engine.' },
+  { image: participants, alt: 'Students developing scenes on their laptops during the course', caption: 'Practical sessions / Building alongside the lesson.' },
+  { image: workshop, alt: 'A classroom of aspiring game developers attending a workshop', caption: 'Our community / A shared space to learn.' },
+  { image: instructor, alt: 'An instructor explaining a projected Unreal Engine scene', caption: 'Guided learning / Exploring ideas with an instructor.' },
+];
 ---
-<SiteLayout title="Community | BoreBit Labs" description="BoreBit is a place for curious minds, creative conversations, and shared discoveries.">
-  <section class="container page-heading"><span class="eyebrow">Community / BoreBit Labs</span><h1>Good ideas grow together.</h1><p>BoreBit is a place for curious minds, creative conversations, and shared discoveries.</p></section>
-  <section class="container editorial-section"><div><span class="section-label">A little more</span><h2>Our community</h2><p>Tell your community story here and share the people, events, and moments that bring it to life.</p></div><div class="image-placeholder"><span>Space for your images</span></div></section>
+<SiteLayout title="Community | BoreBit Labs" description="Building a welcoming game development community through IGDA IIIT Delhi and hands-on Unreal Engine courses.">
+  <section class="container page-heading"><span class="eyebrow">Community / BoreBit Labs</span><h1>Good ideas grow together.</h1><p>We bring aspiring developers together to learn, share their work, and find their place in game development.</p></section>
+  <section class="container story-section" aria-labelledby="igda-title">
+    <div class="story-heading"><span class="section-label">A place to belong</span><h2 id="igda-title">IGDA IIIT Delhi</h2></div>
+    <div class="story-body"><p>Our founders helped establish India's first student chapter of the International Game Developers Association at IIIT Delhi. Through the chapter, we've reached thousands of aspiring game developers and built a welcoming community for learning, collaboration, and shared discoveries.</p></div>
+  </section>
+  <section class="container story-section" aria-labelledby="course-title">
+    <div class="story-heading"><span class="section-label">Learning by building</span><h2 id="course-title">Game Development with Unreal Engine</h2></div>
+    <div class="story-body"><p>We offered a three-month, hands-on Unreal Engine course to more than 90 people, teaching game development through practical experience and helping participants bring their ideas to life.</p></div>
+    <MediaGallery items={courseImages} columns={3} />
+  </section>
 </SiteLayout>

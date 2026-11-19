@@ -1,63 +1,12 @@
 import {
-  AmbientLight, Bone, Box3, DirectionalLight, Group, MathUtils,
-  OrthographicCamera, Quaternion, Scene, SRGBColorSpace, Vector3, WebGLRenderer,
+  AmbientLight, Box3, DirectionalLight, Group, MathUtils,
+  OrthographicCamera, Raycaster, Scene, SRGBColorSpace, Vector2, Vector3, WebGLRenderer,
 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'meshoptimizer';
-import characterUrl from '../../assets/character.optimized.glb?url';
+import characterUrl from '../../assets/character-military.optimized.glb?url';
 
-type ArmChain = {
-  upper: Bone;
-  forearm: Bone;
-  hand: Bone;
-  restUpper: Quaternion;
-  restForearm: Quaternion;
-  side: number;
-};
-
-function pointBoneAt(bone: Bone, child: Bone, target: Vector3) {
-  const origin = bone.getWorldPosition(new Vector3());
-  const current = child.getWorldPosition(new Vector3()).sub(origin);
-  const desired = target.clone().sub(origin);
-  if (current.lengthSq() < 0.0001 || desired.lengthSq() < 0.0001) return;
-
-  const delta = new Quaternion().setFromUnitVectors(current.normalize(), desired.normalize());
-  const worldRotation = bone.getWorldQuaternion(new Quaternion());
-  const parentRotation = bone.parent!.getWorldQuaternion(new Quaternion());
-  bone.quaternion.copy(parentRotation.invert().multiply(delta.multiply(worldRotation)));
-  bone.updateWorldMatrix(false, true);
-}
-
-// Two-bone IK: use the arm lengths to place the elbow, then rotate each joint.
-function aimArm(chain: ArmChain, target: Vector3, strength: number) {
-  const { upper, forearm, hand, restUpper, restForearm, side } = chain;
-  const shoulder = upper.getWorldPosition(new Vector3());
-  const elbow = forearm.getWorldPosition(new Vector3());
-  const wrist = hand.getWorldPosition(new Vector3());
-  const upperLength = shoulder.distanceTo(elbow);
-  const lowerLength = elbow.distanceTo(wrist);
-  if (upperLength < 0.01 || lowerLength < 0.01) return;
-
-  const direction = target.clone().add(new Vector3(side * 0.11, -0.04, 0)).sub(shoulder);
-  const distance = MathUtils.clamp(
-    direction.length(), Math.abs(upperLength - lowerLength) + 0.01, upperLength + lowerLength - 0.01,
-  );
-  direction.normalize();
-  const along = (distance ** 2 + upperLength ** 2 - lowerLength ** 2) / (2 * distance);
-  const bend = Math.sqrt(Math.max(0, upperLength ** 2 - along ** 2));
-  const bendDirection = new Vector3(side * 0.7, -0.45, 0.8);
-  bendDirection.addScaledVector(direction, -bendDirection.dot(direction)).normalize();
-  const elbowTarget = shoulder.clone().addScaledVector(direction, along).addScaledVector(bendDirection, bend);
-  const wristTarget = shoulder.clone().addScaledVector(direction, distance);
-
-  pointBoneAt(upper, forearm, elbowTarget);
-  pointBoneAt(forearm, hand, wristTarget);
-  const solvedUpper = upper.quaternion.clone();
-  const solvedForearm = forearm.quaternion.clone();
-  upper.quaternion.copy(restUpper).slerp(solvedUpper, strength);
-  forearm.quaternion.copy(restForearm).slerp(solvedForearm, strength);
-  upper.updateWorldMatrix(false, true);
-}
+import { aimWeapon, createWeaponRig, resetArms, type WeaponRig } from './characterIK';
 
 export function mountHeroCharacter(stage: HTMLElement) {
   const canvasHost = stage.querySelector<HTMLElement>('[data-character-canvas]');
@@ -77,20 +26,25 @@ export function mountHeroCharacter(stage: HTMLElement) {
 
   const scene = new Scene();
   const camera = new OrthographicCamera(-2, 2, 2, -2, 0.1, 100);
-  camera.position.set(0, 0, 8);
-  camera.lookAt(0, 0, 0);
+  camera.position.set(0, 0.88, 8);
+  camera.lookAt(0, 0.88, 0);
   scene.add(new AmbientLight(0xffffff, 2.1));
   const keyLight = new DirectionalLight(0xffffff, 2.5);
   keyLight.position.set(3, 5, 6);
   scene.add(keyLight);
-  const fillLight = new DirectionalLight(0xffd95a, 1.2);
+  const fillLight = new DirectionalLight(0xb5be9f, 1.2);
   fillLight.position.set(-4, 2, 3);
   scene.add(fillLight);
 
   const pivot = new Group();
   scene.add(pivot);
-  const arms: ArmChain[] = [];
-  const pointerTarget = new Vector3(0, 0, 1);
+  let weaponRig: WeaponRig | undefined;
+  const raycaster = new Raycaster();
+  const pointer = new Vector2();
+  let character: Group | null = null;
+  let bodyTargetX = 0;
+  let bodyTargetY = 0;
+  const pointerTarget = new Vector3();
   const smoothTarget = pointerTarget.clone();
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let pointerActive = false;
@@ -101,7 +55,7 @@ export function mountHeroCharacter(stage: HTMLElement) {
   const resize = () => {
     const width = Math.max(canvasHost.clientWidth, 1);
     const height = Math.max(canvasHost.clientHeight, 1);
-    const halfHeight = width < 700 ? 2.2 : 2.15;
+    const halfHeight = 0.94;
     camera.left = -halfHeight * (width / height);
     camera.right = halfHeight * (width / height);
     camera.top = halfHeight;
@@ -119,19 +73,17 @@ export function mountHeroCharacter(stage: HTMLElement) {
     const easing = reducedMotion ? 1 : 0.12;
     smoothTarget.lerp(pointerTarget, easing);
     aimStrength += ((pointerActive ? 1 : 0) - aimStrength) * easing;
-    if (arms.length) {
-      for (const arm of arms) {
-        arm.upper.quaternion.copy(arm.restUpper);
-        arm.forearm.quaternion.copy(arm.restForearm);
-      }
+    pivot.rotation.x += (bodyTargetX - pivot.rotation.x) * easing;
+    pivot.rotation.y += (bodyTargetY - pivot.rotation.y) * easing;
+    if (weaponRig) {
+      resetArms(weaponRig);
       pivot.updateMatrixWorld(true);
-      if (aimStrength > 0.001) {
-        for (const arm of arms) aimArm(arm, smoothTarget, aimStrength);
-      }
+      if (aimStrength > 0.001) aimWeapon(weaponRig, smoothTarget, aimStrength);
     }
     renderer.render(scene, camera);
     if (smoothTarget.distanceToSquared(pointerTarget) > 0.00001 ||
-        Math.abs(aimStrength - (pointerActive ? 1 : 0)) > 0.001) {
+        Math.abs(aimStrength - (pointerActive ? 1 : 0)) > 0.001 ||
+        Math.abs(pivot.rotation.x - bodyTargetX) > 0.001 || Math.abs(pivot.rotation.y - bodyTargetY) > 0.001) {
       frame = requestAnimationFrame(tick);
     }
   };
@@ -142,19 +94,40 @@ export function mountHeroCharacter(stage: HTMLElement) {
 
   window.addEventListener('pointermove', (event) => {
     const rect = canvasHost.getBoundingClientRect();
-    const x = MathUtils.clamp(((event.clientX - rect.left) / rect.width) * 2 - 1, -1.2, 1.2);
-    const y = MathUtils.clamp(-(((event.clientY - rect.top) / rect.height) * 2 - 1), -1.2, 1.2);
+    const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    const y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
+    pointer.set(x, y);
+    raycaster.setFromCamera(pointer, camera);
+    const hoveringCharacter = !!character && x * x + y * y <= 1 &&
+      raycaster.intersectObject(character, true).length > 0;
+    // Ignore the hidden legs and transparent corners outside the circular portrait.
+    const nearCharacter = Math.hypot(x, y) <= 1 + 50 / rect.width;
+    const nearButton = [...stage.querySelectorAll<HTMLElement>('.radial-nav a')].some((button) => {
+      const bounds = button.getBoundingClientRect();
+      return event.clientX >= bounds.left - 55 && event.clientX <= bounds.right + 55 &&
+        event.clientY >= bounds.top - 55 && event.clientY <= bounds.bottom + 55;
+    });
+    pointerActive = nearButton && !nearCharacter && !reducedMotion;
+    bodyTargetX = hoveringCharacter && !reducedMotion ? MathUtils.clamp(-y * 0.14, -0.14, 0.14) : 0;
+    bodyTargetY = hoveringCharacter && !reducedMotion ? MathUtils.clamp(x * 0.25, -0.25, 0.25) : 0;
+    // Unclamped world-space cursor: the barrel must track every point near a button.
     pointerTarget.set(x, y, 0).unproject(camera);
-    pointerTarget.z = 1.1;
-    pointerActive = true;
     requestTick();
   }, { passive: true });
   window.addEventListener('pointerout', (event) => {
     if (!event.relatedTarget) {
       pointerActive = false;
+      bodyTargetX = bodyTargetY = 0;
       requestTick();
     }
   });
+  const resetInteraction = () => {
+    pointerActive = false;
+    bodyTargetX = bodyTargetY = 0;
+    requestTick();
+  };
+  window.addEventListener('blur', resetInteraction);
+  window.addEventListener('scroll', resetInteraction, { passive: true });
 
   new ResizeObserver(resize).observe(canvasHost);
   new IntersectionObserver(([entry]) => {
@@ -168,15 +141,9 @@ export function mountHeroCharacter(stage: HTMLElement) {
   new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(
     characterUrl,
     ({ scene: model }) => {
-      for (const side of ['L', 'R'] as const) {
-        const upper = model.getObjectByName(`EM3D_Base_${side}_Upperarm`) as Bone | undefined;
-        const forearm = model.getObjectByName(`EM3D_Base_${side}_Forearm`) as Bone | undefined;
-        const hand = model.getObjectByName(`EM3D_Base_${side}_Hand`) as Bone | undefined;
-        if (!upper || !forearm || !hand) continue;
-        upper.rotation.z = side === 'L' ? -1.25 : 1.25;
-        arms.push({ upper, forearm, hand, restUpper: upper.quaternion.clone(),
-          restForearm: forearm.quaternion.clone(), side: side === 'L' ? 1 : -1 });
-      }
+      character = model;
+      model.updateMatrixWorld(true);
+      weaponRig = createWeaponRig(model);
       const bounds = new Box3().setFromObject(model);
       const size = bounds.getSize(new Vector3());
       const center = bounds.getCenter(new Vector3());

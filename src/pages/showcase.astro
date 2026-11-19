@@ -3,10 +3,10 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 const images = import.meta.glob('../../assets/{Designer,Blender,UE}/*.{webp,jpg}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 const videos = import.meta.glob('../../assets/{AfterEffects,UE}/*.mp4', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 const groups = [
-  { folder: 'Designer', title: 'Substance Designer', description: 'Materials and textures made with Substance Designer. Add the story and process behind these explorations here.' },
-  { folder: 'Blender', title: 'Blender', description: 'A selection of 3D work created in Blender. Add your own notes about these pieces here.' },
-  { folder: 'UE', title: 'Unreal Engine', description: 'Worlds and scenes brought to life in Unreal Engine. Add your own project details here.' },
-  { folder: 'AfterEffects', title: 'After Effects', description: 'Motion and visual storytelling made with After Effects. Add your own notes here.' },
+  { folder: 'Designer', title: 'Substance Designer', description: 'Materials and textures made with Substance Designer. All materials were authored referencing our campus, IIIT Delhi to support the game we\'re building' },
+  { folder: 'Blender', title: 'Blender', description: 'A selection of 3D work created in Blender. These were created by Taraash for various render challenges, personal projects and coursework.' },
+  { folder: 'UE', title: 'Unreal Engine', description: 'Worlds and scenes brought to life in Unreal Engine. Some of these scenes supported the game development course we taught (in collaboration with the IGDA IIIT Delhi) in the summer.' },
+  { folder: 'AfterEffects', title: 'After Effects', description: 'Motion and visual storytelling made with After Effects. Material made to promote our institutes annual tech fest, ESYA. This reel reached over 10k views on Instagram.' },
 ];
 ---
 <SiteLayout title="Showcase | BoreBit Labs" description="Explore BoreBit artwork by creative tool.">
